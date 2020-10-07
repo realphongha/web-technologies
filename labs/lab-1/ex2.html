@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <title>Exercise 2</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            table{
+                width: 100%;
+            }
+            table, th, td{
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            tr.row-header{
+                height: 200px;
+            }
+            tr.row-header th{
+                vertical-align: top;
+            }
+            th, td {
+                padding: 15px;
+            }
+            td.row-name{
+                width: 25%;
+            }
+            th{
+                width: 75%;
+            }
+            .table-zebra tr:nth-child(even) {
+                background-color: whitesmoke;
+            }
+            .table-zebra tr:nth-child(odd) {
+                background-color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <table class="table-zebra">
+            <caption><h1>THÔNG TIN CÁ NHÂN</h1></caption>
+            <tr class="row-header">
+                <th style="text-align: left">Thông tin</th>
+                <th>
+                    Ảnh<br/><br/><br/>
+                    <img src="profile_pic.png" alt="Profile picture" 
+                         style="width:100px;height:100px;">
+                </th>
+            </tr>
+            <tr>
+                <td class="row-name">Học vấn</td>
+                <td>Trường Đại học Bách khoa Hà Nội</td>
+            </tr>
+            <tr>
+                <td class="row-name">Kỹ năng</td>
+                <td>Viết crawler chuyên nghiệp</td>
+            </tr>
+            <tr>
+                <td class="row-name">Kinh nghiệm</td>
+                <td>Senior</td>
+            </tr>
+            <tr>
+                <td class="row-name">Bằng cấp</td>
+                <td>Thạc sỹ</td>
+            </tr>
+            <tr>
+                <td class="row-name">Sở thích</td>
+                <td>Viết crawler</td>
+            </tr>
+            <tr>
+                <td class="row-name">Hoạt động xã hội</td>
+                <td>Tham gia tổ chức từ thiện</td>
+            </tr>
+        </table>
+    </body>
+</html>

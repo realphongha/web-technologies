@@ -14,8 +14,8 @@ if (DEVELOPMENT_ENVIRONMENT == true) {
 
 
 function stripSlashesDeep($value) {
-    $value = is_array($value) ? array_map('stripSlashesDeep', $value) : stripslashes($value);
-    return $value;
+    $return_value = is_array($value) ? array_map('stripSlashesDeep', $value) : stripslashes($value);
+    return $return_value;
 }
 
 function removeMagicQuotes() {

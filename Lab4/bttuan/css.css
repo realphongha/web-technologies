@@ -1,0 +1,82 @@
+.clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+.clearfix {
+    clear: both;
+    display: block;
+}
+tr th, tr td{
+    padding: 10px;
+}
+.table{
+    margin: 0px auto;
+    width: 500px;
+}
+th{
+    background-color: aquamarine;
+}
+h1{
+    margin-left: 10em;
+}
+p.error{
+    color: red;
+    font-style: italic;
+    font-size: 12px;
+}
+.formbsn{
+    width: 800px;
+    margin: 0px auto;
+    background: #bee8e8;
+}
+.row label{
+    margin: 0em 2em;
+}
+.row input, .row select{
+    width: 20em;
+}
+.tb_reg{
+    width: 100%;
+}
+td select{
+    width: 20em;
+}
+td select option{
+    padding: 5px 1em;
+}
+.submit{
+    text-align: center;
+}
+.cat-input{
+    padding-left: 6px;
+    border: solid 1px #9E9E9E;
+    border-radius: 2px;
+    height: 28px;
+}   
+.bus-input{
+    padding-left: 6px;
+    border: solid 1px #9E9E9E;
+    border-radius: 2px;
+    height: 22px;
+}
+.cat-submit, .bus-submit{
+    height: 36px;
+    width: 120px;
+    border-radius: 3px;
+    border: solid 1px #3F51B5;
+	cursor: pointer;
+	background-color: #3F51B5;
+	color: #ffff;
+	font-weight: bold;
+}
+.bus-submit{
+    margin-bottom: 16px;
+}
+.cat-submit:hover, .bus-submit:hover{
+	border: solid 1px #e91e63;
+	background-color: #e91e63;
+}

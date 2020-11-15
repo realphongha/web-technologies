@@ -1,0 +1,4 @@
+Bước 1: tạo database cnw
+Bước 2: Chạy file cnw.sql có trong thư mục để tạo bảng và dữ liệu ban đầu
+Bước 3: vào file lib.php kiểm tra lại username và password để có thể kết nối thành công với database 
+Bước 4: Chạy file CategoryAdmin.php hoặc addBusiness.php hoặc show.php

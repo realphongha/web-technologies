@@ -39,7 +39,7 @@ class DbManager
     private function connect()
     {
         $this->db = new \mysqli(
-            $this->connectionParam['host'],
+            "p:" . $this->connectionParam['host'], // p: - persistent connection
             $this->connectionParam['user'],
             $this->connectionParam['password'],
             $this->connectionParam['dbname']
@@ -76,8 +76,7 @@ class DbManager
     }
 
 
-    public function getConnection()
-    {
+    public function getConnection(){
         return $this->db;
     }
 

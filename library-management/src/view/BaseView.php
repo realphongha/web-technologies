@@ -12,12 +12,17 @@ class BaseView{
 
 
     public function __destruct(){
+//        include "../src/view/fragments/template.php";
     }
 
 
-    public function renderView($variables = null){
+    public function renderView($message = null, $variables = null){
         \ob_start();
-        require "../src/view/{$this->controller}/{$this->action}.php";
+        if ($this->action == ""){
+            require "../src/view/{$this->controller}/index.php";
+        } else{
+            require "../src/view/{$this->controller}/{$this->action}.php";
+        }
 //        $this->content = \ob_get_clean();
     }
 

@@ -2,18 +2,23 @@
 
 require_once __DIR__ . '/../src/utils/GlobalUtils.php';
 require_once __DIR__ . '/../src/controller/BaseController.php';
+require_once __DIR__ . '/../src/controller/ErrorController.php';
 require_once __DIR__ . '/../src/model/DbManager.php';
+require_once __DIR__ . '/../src/model/User.php';
 
-$appConfig = require __DIR__ . '/../config/application.config.php';
+$appConfig = require_once __DIR__ . '/../config/application.config.php';
+
+session_start();
+//session_destroy();
 
 removeMagicQuotes();
 unregisterGlobals();
 
 $urlArray = explode("/", filter_input(INPUT_SERVER, "REQUEST_URI"));
 array_shift($urlArray);
-if ($urlArray[0] == "library-management"){
-    array_shift($urlArray);
-}
+//if ($urlArray[0] == "library-management"){
+//    array_shift($urlArray);
+//}
 if (count($urlArray) == 1){
     $action = null;
     $actionArray = explode("?", $urlArray[0]);
@@ -36,27 +41,24 @@ if (count($actionArray) == 2){
 // router
 $controllerName = null;
 switch ($controller) {
-    case "login":
+    case "auth":
         $controllerName = AuthController::class;
-        if ($_SERVER["REQUEST_METHOD"] == "POST"){
-            $action = "login";
-        } else if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            $action = "view";
-        }
-        break;
-    case "logout":
-        $controllerName = AuthController::class;
-        $action = "logout";
         break;
     
     case 'book':
         $controllerName = 'BookController';
         if ($action == null){
-            $action = "getList";
+            $action = "list";
         }
         break;
-
+        
+    case 'error':
+        $controllerName = ErrorController::class;
+        break;
+        
     default:
+        $controllerName = "HomeController";
+        $action = "view";
         break;
 }
 
@@ -67,18 +69,31 @@ switch ($controller) {
 //print_r($queries);
 //echo "<br>";
 
-if (!@include_once __DIR__ . '/../src/controller/' . $controllerName . '.php'){
-    die("URL not found!");
+if (!include_once __DIR__ . '/../src/controller/' . $controllerName . '.php'){
+    $controllerName = "ErrorController";
+    $action = "notFound";
 }
-if ((int)method_exists($controllerName, $action)) {
-    require_once __DIR__ . '/../src/controller/' . $controllerName . '.php';
-    $db = new DbManager($appConfig);
-    $dbConnection = null;
-    if ($db) {
-        $dbConnection = $db->getConnection();
-        $controller = new $controllerName($dbConnection);
-        $controller->{$action}($_REQUEST, $queries);
-    }
+
+if ((int)method_exists($controllerName, $action) == 0){
+    $controllerName = "ErrorController";
+    $action = "notFound";
+}
+
+require_once __DIR__ . '/../src/controller/' . $controllerName . '.php';
+
+$db = new DbManager($appConfig);
+$dbConnection = null;
+if (is_null($db)){
+    $controllerName = ErrorController::class;
+    $action = "internal";
 } else {
-    echo "Method ", $action, " does not exist in class ",  $controller, "!\n";
+    $dbConnection = $db->getConnection();
+}
+
+$controller = new $controllerName($dbConnection);
+if (is_null($controller)){
+    $controller = new ErrorController(null);
+    $controller->notFound($request, $queries);
+} else {
+    $controller->{$action}($_REQUEST, $queries);
 }

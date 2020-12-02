@@ -1,43 +1,38 @@
 <?php
 
-class Book{
+require_once __DIR__ . '/./BaseModel.php';
+
+class User extends BaseModel{
     
-    private $user_id;
+    private $userId;
     private $email;
     private $password;
     private $name;
-    private $ic_number;
+    private $icNumber;
     private $phone;
-    private $date_of_birth;
+    private $dateOfBirth;
     private $address;
     private $type;
     private $status;
-    private $insert_date;
-    private $insert_by;
-    private $update_date;
-    private $update_by;
     
-    function __construct($user_id, $email, $password, $name, $ic_number, $phone, 
-            $date_of_birth, $address, $type, $status, 
-            $insert_date, $insert_by, $update_date, $update_by) {
-        $this->user_id = $user_id;
+    function __construct($userId, $email, $password, $name, $icNumber, $phone, 
+            $dateOfBirth, $address, $type, $status,
+            $insertDate, $insertBy, $updateDate, $updateBy) {
+        parent::__construct($insertDate, $insertBy, $updateDate, $updateBy);
+        $this->userId = $userId;
         $this->email = $email;
         $this->password = $password;
         $this->name = $name;
-        $this->ic_number = $ic_number;
+        $this->icNumber = $icNumber;
         $this->phone = $phone;
-        $this->date_of_birth = $date_of_birth;
+        $this->dateOfBirth = $dateOfBirth;
         $this->address = $address;
         $this->type = $type;
         $this->status = $status;
-        $this->insert_date = $insert_date;
-        $this->insert_by = $insert_by;
-        $this->update_date = $update_date;
-        $this->update_by = $update_by;
     }
     
-    function getUser_id() {
-        return $this->user_id;
+    function getUserId() {
+        return $this->userId;
     }
 
     function getEmail() {
@@ -52,16 +47,16 @@ class Book{
         return $this->name;
     }
 
-    function getIc_number() {
-        return $this->ic_number;
+    function getIcNumber() {
+        return $this->icNumber;
     }
 
     function getPhone() {
         return $this->phone;
     }
 
-    function getDate_of_birth() {
-        return $this->date_of_birth;
+    function getDateOfBirth() {
+        return $this->dateOfBirth;
     }
 
     function getAddress() {
@@ -76,24 +71,8 @@ class Book{
         return $this->status;
     }
 
-    function getInsert_date() {
-        return $this->insert_date;
-    }
-
-    function getInsert_by() {
-        return $this->insert_by;
-    }
-
-    function getUpdate_date() {
-        return $this->update_date;
-    }
-
-    function getUpdate_by() {
-        return $this->update_by;
-    }
-
-    function setUser_id($user_id): void {
-        $this->user_id = $user_id;
+    function setUserId($userId): void {
+        $this->userId = $userId;
     }
 
     function setEmail($email): void {
@@ -108,16 +87,16 @@ class Book{
         $this->name = $name;
     }
 
-    function setIc_number($ic_number): void {
-        $this->ic_number = $ic_number;
+    function setIcNumber($icNumber): void {
+        $this->icNumber = $icNumber;
     }
 
     function setPhone($phone): void {
         $this->phone = $phone;
     }
 
-    function setDate_of_birth($date_of_birth): void {
-        $this->date_of_birth = $date_of_birth;
+    function setDateOfBirth($dateOfBirth): void {
+        $this->dateOfBirth = $dateOfBirth;
     }
 
     function setAddress($address): void {
@@ -130,22 +109,6 @@ class Book{
 
     function setStatus($status): void {
         $this->status = $status;
-    }
-
-    function setInsert_date($insert_date): void {
-        $this->insert_date = $insert_date;
-    }
-
-    function setInsert_by($insert_by): void {
-        $this->insert_by = $insert_by;
-    }
-
-    function setUpdate_date($update_date): void {
-        $this->update_date = $update_date;
-    }
-
-    function setUpdate_by($update_by): void {
-        $this->update_by = $update_by;
     }
 
 }

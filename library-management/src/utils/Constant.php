@@ -16,3 +16,9 @@ define("BBOOK_PENDING", 1);
 define("BBOOK_BORROWED", 2);
 define("BBOOK_RETURNED", 3);
 define("BBOOK_LOST", 4);
+
+// user role:
+define("ADMIN_ROLE", 0);
+define("EMPLOYEE_ROLE", 1);
+define("USER_ROLE", 2);
+define("GUEST_ROLE", 3);

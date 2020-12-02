@@ -1,0 +1,5 @@
+/* dùng cho trường bắt buộc trong form input */
+.form-required:after {
+  content: " *";
+  color: red;
+}

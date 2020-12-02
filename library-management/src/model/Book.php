@@ -1,8 +1,10 @@
 <?php
 
-class Book{
+require_once __DIR__ . '/./BaseModel.php';
+
+class Book extends BaseModel{
     
-    private $book_id;
+    private $bookId;
     private $title;
     private $category;
     private $author;
@@ -11,15 +13,12 @@ class Book{
     private $price;
     private $amount;
     private $status;
-    private $insert_date;
-    private $insert_by;
-    private $update_date;
-    private $update_by;
     
-    function __construct($book_id, $title, $category, $author, $language, 
+    function __construct($bookId, $title, $category, $author, $language, 
             $publisher, $price, $amount, $status, 
-            $insert_date, $insert_by, $update_date, $update_by) {
-        $this->book_id = $book_id;
+            $insertDate, $insertBy, $updateDate, $updateBy) {
+        parent::__construct($insertDate, $insertBy, $updateDate, $updateBy);
+        $this->bookId = $bookId;
         $this->title = $title;
         $this->category = $category;
         $this->author = $author;
@@ -28,14 +27,10 @@ class Book{
         $this->price = $price;
         $this->amount = $amount;
         $this->status = $status;
-        $this->insert_date = $insert_date;
-        $this->insert_by = $insert_by;
-        $this->update_date = $update_date;
-        $this->update_by = $update_by;
     }
     
-    function getBook_id() {
-        return $this->book_id;
+    function getBookId() {
+        return $this->bookId;
     }
 
     function getTitle() {
@@ -70,24 +65,8 @@ class Book{
         return $this->status;
     }
 
-    function getInsert_date() {
-        return $this->insert_date;
-    }
-
-    function getInsert_by() {
-        return $this->insert_by;
-    }
-
-    function getUpdate_date() {
-        return $this->update_date;
-    }
-
-    function getUpdate_by() {
-        return $this->update_by;
-    }
-
-    function setBook_id($book_id): void {
-        $this->book_id = $book_id;
+    function setBookId($bookId): void {
+        $this->bookId = $bookId;
     }
 
     function setTitle($title): void {
@@ -120,22 +99,6 @@ class Book{
 
     function setStatus($status): void {
         $this->status = $status;
-    }
-
-    function setInsert_date($insert_date): void {
-        $this->insert_date = $insert_date;
-    }
-
-    function setInsert_by($insert_by): void {
-        $this->insert_by = $insert_by;
-    }
-
-    function setUpdate_date($update_date): void {
-        $this->update_date = $update_date;
-    }
-
-    function setUpdate_by($update_by): void {
-        $this->update_by = $update_by;
     }
 
 }

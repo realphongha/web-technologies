@@ -17,7 +17,7 @@ class BookManager{
 
     public function findAllBooks($page, $pageSize, $sortBy, $sortOrder){
         $books = [];
-        $query = "SELECT book.* FROM book"
+        $query = "SELECT * FROM book"
                 . " WHERE status = " . strval(BOOK_ACTIVE)
                 . " ORDER BY " . $sortBy . " " . $sortOrder . " LIMIT " . 
                 strval(($page-1)*$pageSize) . ", " . strval($pageSize);
@@ -47,10 +47,10 @@ class BookManager{
     }
 
 
-    public function findBookById($book_id){
-        $query = "SELECT book.* FROM book "
-                . "WHERE book.book_id = '%s'";
-        $query = sprintf($query, $this->db->real_escape_string($book_id));
+    public function findBookById($bookId){
+        $query = "SELECT * FROM book "
+                . "WHERE book.book_id = %d";
+        $query = sprintf($query, $this->db->real_escape_string($bookId));
         if ($result = $this->db->query($query)) {
             $row = $result->fetch_assoc();
             $book = new Book(
@@ -73,23 +73,6 @@ class BookManager{
         }
         return $book;
     }
-
-
-    public function addPost($title, $content, $userid)
-    {
-        $query = "INSERT INTO post (
-              `title`, `content`, `status`, `id_user`, `date_created`
-          )
-          VALUES (
-              '%s', '%s', 2, '%d', NOW()
-          )";
-        $query = \sprintf($query, $this->db->real_escape_string($title), $this->db->real_escape_string($content), $this->db->real_escape_string($userid));
-        if ($result = $this->db->query($query)) {
-            return true;
-        } else {
-            die($this->db->error);
-        }
-    }
     
     public function addBook($book){
         $query = "INSERT INTO book (
@@ -101,16 +84,16 @@ class BookManager{
               '%s', '%s', '%s', '%s', '%s', '%d', '%d', %d, NOW(), %d, NOW(), %d
             )";
         $query = \sprintf($query, 
-                $this->db->real_escape_string($book->title), 
-                $this->db->real_escape_string($book->category), 
-                $this->db->real_escape_string($book->author),
-                $this->db->real_escape_string($book->language),
-                $this->db->real_escape_string($book->publisher),
-                $this->db->real_escape_string($book->price),
-                $this->db->real_escape_string($book->amount),
+                $this->db->real_escape_string($book->getTitle()), 
+                $this->db->real_escape_string($book->getCategory()), 
+                $this->db->real_escape_string($book->getAuthor()),
+                $this->db->real_escape_string($book->getLanguage()),
+                $this->db->real_escape_string($book->getPublisher()),
+                $this->db->real_escape_string($book->getPrice()),
+                $this->db->real_escape_string($book->getAmount()),
                 BOOK_ACTIVE,
-                1,
-                1);
+                unserialize($_SESSION["current_user"])->getUserId(),
+                unserialize($_SESSION["current_user"])->getUserId());
         if ($result = $this->db->query($query)) {
             return true;
         } else {
@@ -120,16 +103,17 @@ class BookManager{
     
     public function editBook($book){
         $query = "UPDATE book SET "
-                . (is_null($book->title) ? "" : ("title = " . mysql_real_escape_string($book->title) . ", "))
-                . (is_null($book->category) ? "" : ("category = " . mysql_real_escape_string($book->category) . ", "))
-                . (is_null($book->author) ? "" : ("author = " . mysql_real_escape_string($book->author) . ", "))
-                . (is_null($book->language) ? "" : ("language = " . mysql_real_escape_string($book->language) . ", "))
-                . (is_null($book->publisher) ? "" : ("publisher = " . mysql_real_escape_string($book->publisher) . ", "))
-                . (is_null($book->price) ? "" : ("price = " . mysql_real_escape_string($book->price) . ", "))
-                . (is_null($book->amount) ? "" : ("amount = " . mysql_real_escape_string($book->amount). ", "))
-                . "update_date = " . NOW() . ", "
-                . "update_by = " . strval(1)
-                . " WHERE book_id = " . strval($book->book_id);
+                . (is_null($book->getTitle()) ? "" : ("title = '" . $this->db->real_escape_string($book->getTitle()) . "', "))
+                . (is_null($book->getCategory()) ? "" : ("category = '" . $this->db->real_escape_string($book->getCategory()) . "', "))
+                . (is_null($book->getAuthor()) ? "" : ("author = '" . $this->db->real_escape_string($book->getAuthor()) . "', "))
+                . (is_null($book->getLanguage()) ? "" : ("language = '" . $this->db->real_escape_string($book->getLanguage()) . "', "))
+                . (is_null($book->getPublisher()) ? "" : ("publisher = '" . $this->db->real_escape_string($book->getPublisher()) . "', "))
+                . (is_null($book->getPrice()) ? "" : ("price = " . $this->db->real_escape_string($book->getPrice()) . ", "))
+                . (is_null($book->getAmount()) ? "" : ("amount = " . $this->db->real_escape_string($book->getAmount()). ", "))
+                . "update_date = NOW(), "
+                . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
+                . " WHERE book_id = " . strval($book->getBookId());
+//        echo $query;
         if ($result = $this->db->query($query)) {
             return true;
         } else {
@@ -137,12 +121,12 @@ class BookManager{
         }
     }
 
-    public function deleteBook($book_id){
+    public function deleteBook($bookId){
         $query = "UPDATE book SET "
                 . "status = " . BOOK_DELETED . ", "
-                . "update_date = " . NOW() . ", "
-                . "update_by = " . strval(1)
-                . " WHERE book_id = " . strval($book_id);
+                . "update_date = NOW(), "
+                . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
+                . " WHERE book_id = " . strval($bookId);
         if ($result = $this->db->query($query)) {
             return true;
         } else {

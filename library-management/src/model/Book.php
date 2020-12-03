@@ -11,11 +11,12 @@ class Book extends BaseModel{
     private $language;
     private $publisher;
     private $price;
+    private $fee;
     private $amount;
     private $status;
     
     function __construct($bookId, $title, $category, $author, $language, 
-            $publisher, $price, $amount, $status, 
+            $publisher, $price, $fee, $amount, $status, 
             $insertDate, $insertBy, $updateDate, $updateBy) {
         parent::__construct($insertDate, $insertBy, $updateDate, $updateBy);
         $this->bookId = $bookId;
@@ -25,6 +26,7 @@ class Book extends BaseModel{
         $this->language = $language;
         $this->publisher = $publisher;
         $this->price = $price;
+        $this->fee = $fee;
         $this->amount = $amount;
         $this->status = $status;
     }
@@ -55,6 +57,10 @@ class Book extends BaseModel{
 
     function getPrice() {
         return $this->price;
+    }
+    
+    function getFee() {
+        return $this->fee;
     }
 
     function getAmount() {
@@ -91,6 +97,10 @@ class Book extends BaseModel{
 
     function setPrice($price): void {
         $this->price = $price;
+    }
+    
+    function setFee($fee): void {
+        $this->fee = $fee;
     }
 
     function setAmount($amount): void {

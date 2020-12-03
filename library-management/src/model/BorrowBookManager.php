@@ -30,7 +30,7 @@ class BorrowBookManager{
                     $row['time_request'],
                     $row['time_borrow'],
                     $row['quantity'],
-                    $row['price'],
+                    $row['fee'],
                     $row['status'],
                     $row['insert_date'],
                     $row['insert_by'],
@@ -58,7 +58,7 @@ class BorrowBookManager{
                     $row['time_request'],
                     $row['time_borrow'],
                     $row['quantity'],
-                    $row['price'],
+                    $row['fee'],
                     $row['status'],
                     $row['insert_date'],
                     $row['insert_by'],
@@ -74,7 +74,7 @@ class BorrowBookManager{
     public function addBorrowBook($bbook){
         $query = "INSERT INTO borrow_book (
               `book_id`, `user_id`, `time_request`, `quantity`, 
-              `price`, `status`, 
+              `fee`, `status`, 
               `insert_date`, `insert_by`, `update_date`, `update_by`
             )
             VALUES (
@@ -84,7 +84,7 @@ class BorrowBookManager{
                 $this->db->real_escape_string($bbook->getBookId()), 
                 $this->db->real_escape_string($book->getUserId()), 
                 $this->db->real_escape_string($book->getQuantity()),
-                $this->db->real_escape_string($book->getPrice()),
+                $this->db->real_escape_string($book->getFee()),
                 $this->db->real_escape_string($book->getStatus),
                 $this->db->real_escape_string(unserialize($_SESSION["current_user"])->getUserId()),
                 $this->db->real_escape_string(unserialize($_SESSION["current_user"])->getUserId())

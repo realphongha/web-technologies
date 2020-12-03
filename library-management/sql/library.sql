@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS `book` (
   `author` varchar(50) NOT NULL,
   `language` varchar(50) NOT NULL,
   `publisher` varchar(50) DEFAULT NULL,
-  `price` int(11) NOT NULL COMMENT 'Giá mượn',
+  `price` int(11) NOT NULL COMMENT 'Giá sách',
+  `fee` int(11) NOT NULL COMMENT 'Giá mượn',
   `amount` int(11) NOT NULL COMMENT 'Số lượng còn lại',
   `status` tinyint(4) NOT NULL COMMENT 'Trạng thái sách. 0 - đã xóa, 1 - đang hoạt động.',
   `insert_date` datetime NOT NULL,
@@ -34,18 +35,18 @@ CREATE TABLE IF NOT EXISTS `book` (
   PRIMARY KEY (`book_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='Lưu thông tin sách';
 
--- Dumping data for table library.book: ~7 rows (approximately)
+-- Dumping data for table library.book: ~8 rows (approximately)
 /*!40000 ALTER TABLE `book` DISABLE KEYS */;
-INSERT INTO `book` (`book_id`, `title`, `category`, `author`, `language`, `publisher`, `price`, `amount`, `status`, `insert_date`, `insert_by`, `update_date`, `update_by`) VALUES
-	(1, 'book1', 'cat1', 'au1', 'lan2', 'pub1', 100000, 1000, 1, '2020-11-29 10:53:52', 1, '2020-12-02 11:12:11', 1),
-	(2, 'book2', 'cat1', 'au2', 'lan1', 'pub1', 200000, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
-	(3, 'book3', 'cat2', 'au3', 'lan1', 'pub3', 100000, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
-	(4, 'book4', 'cat3', 'au1', 'lan2', 'pub3', 300000, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
-	(5, 'book5', 'cat3', 'au4', 'lan1', 'pub2', 400000, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
-	(6, 'book6', 'cat4', 'au1', 'lan3', 'pub4', 500000, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
-	(7, 'book7', 'cat4', 'au1', 'lan1', 'pub1', 200000, 1000, 1, '2020-11-29 10:53:52', 1, '2020-12-02 11:14:13', 1),
-	(8, 'blah2', 'blah', 'blah', 'en', 'nxb1', 69000, 20000, 1, '2020-12-02 12:21:04', 1, '2020-12-02 13:11:11', 1),
-	(9, 'test', 'blah', 'blah', 'en', 'nxb1', 50000, 500, 1, '2020-12-02 12:26:52', 1, '2020-12-02 12:26:52', 1);
+INSERT INTO `book` (`book_id`, `title`, `category`, `author`, `language`, `publisher`, `price`, `fee`, `amount`, `status`, `insert_date`, `insert_by`, `update_date`, `update_by`) VALUES
+	(1, 'book1', 'cat1', 'au1', 'lan2', 'pub1', 100000, 0, 1000, 0, '2020-11-29 10:53:52', 1, '2020-12-03 16:35:09', 1),
+	(2, 'book2', 'cat1', 'au2', 'lan1', 'pub1', 200000, 0, 1000, 0, '2020-11-29 10:53:52', 1, '2020-12-03 16:35:14', 1),
+	(3, 'book3', 'cat2', 'au3', 'lan1', 'pub3', 100000, 0, 1000, 0, '2020-11-29 10:53:52', 1, '2020-12-03 16:35:16', 1),
+	(4, 'book4', 'cat3', 'au1', 'lan2', 'pub3', 300000, 0, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
+	(5, 'book5', 'cat3', 'au4', 'lan1', 'pub2', 400000, 0, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
+	(6, 'book6', 'cat4', 'au1', 'lan3', 'pub4', 500000, 0, 1000, 1, '2020-11-29 10:53:52', 1, '2020-11-29 10:53:55', 1),
+	(7, 'book7', 'cat4', 'au1', 'lan1', 'pub1', 200000, 0, 1000, 1, '2020-11-29 10:53:52', 1, '2020-12-02 11:14:13', 1),
+	(8, 'blah2', 'blah', 'blah', 'en', 'nxb1', 69000, 0, 20000, 0, '2020-12-02 12:21:04', 1, '2020-12-03 16:35:12', 1),
+	(9, 'test', 'blah', 'blah', 'en', 'nxb1', 50000, 0, 500, 0, '2020-12-02 12:26:52', 1, '2020-12-03 16:08:46', 1);
 /*!40000 ALTER TABLE `book` ENABLE KEYS */;
 
 -- Dumping structure for table library.borrow_book
@@ -56,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `borrow_book` (
   `time_request` datetime NOT NULL COMMENT 'Thời gian yêu cầu mượn',
   `time_borrow` datetime DEFAULT NULL COMMENT 'Thời gian mượn',
   `quantity` int(11) NOT NULL COMMENT 'Số sách mượn',
-  `price` int(11) NOT NULL COMMENT 'Tổng giá mượn',
+  `fee` int(11) NOT NULL COMMENT 'Tổng giá mượn',
   `status` tinyint(4) NOT NULL COMMENT 'Trạng thái giao dịch. 0 - đã hủy,  1 - chờ giao dịch, 2 - đã cho mượn, 3 - đã trả, 4 - đã mất/hỏng',
   `insert_date` datetime NOT NULL,
   `insert_by` int(11) NOT NULL,
@@ -67,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `borrow_book` (
 
 -- Dumping data for table library.borrow_book: ~2 rows (approximately)
 /*!40000 ALTER TABLE `borrow_book` DISABLE KEYS */;
-INSERT INTO `borrow_book` (`borrow_book_id`, `book_id`, `user_id`, `time_request`, `time_borrow`, `quantity`, `price`, `status`, `insert_date`, `insert_by`, `update_date`, `update_by`) VALUES
+INSERT INTO `borrow_book` (`borrow_book_id`, `book_id`, `user_id`, `time_request`, `time_borrow`, `quantity`, `fee`, `status`, `insert_date`, `insert_by`, `update_date`, `update_by`) VALUES
 	(1, 1, 1, '2020-11-29 10:57:44', NULL, 5, 500000, 1, '2020-11-29 10:57:54', 1, '2020-11-29 10:57:55', 1),
 	(2, 1, 1, '2020-10-29 10:57:44', NULL, 10, 1000000, 1, '2020-11-29 10:57:54', 1, '2020-11-29 10:57:55', 1);
 /*!40000 ALTER TABLE `borrow_book` ENABLE KEYS */;

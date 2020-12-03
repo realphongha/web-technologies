@@ -8,7 +8,7 @@
         }
     }
     // Neu chua dang nhap thi hien hop thoai dang nhap:
-    if (!isset($_SESSION["current_user"]) ?? !$_SESSION["current_user"]){
+    if (!isset($_SESSION["current_user"]) || !$_SESSION["current_user"]){
         ?>
         <form action="/auth/login" method="post">
             <label for="email">Email:</label><br>

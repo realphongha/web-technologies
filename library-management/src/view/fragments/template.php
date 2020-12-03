@@ -1,6 +1,3 @@
-<?php
-require_once __DIR__ . '/.../utils/Constant.php';
-?>
 <!DOCTYPE HTML>
 <html lang="vi">
     <head>
@@ -14,6 +11,7 @@ require_once __DIR__ . '/.../utils/Constant.php';
     <body>
         <?php
         require_once __DIR__ . '/../fragments/header.php';
+        require_once __DIR__ . '/../fragments/menu.php';
         ?>
         
         <div id="content">

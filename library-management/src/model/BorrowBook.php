@@ -10,11 +10,11 @@ class BorrowBook extends BaseModel{
     private $timeBorrow;
     private $timeRequest;
     private $quantity;
-    private $price;
+    private $fee;
     private $status;
     
     function __construct($borrowBookId, $bookId, $userId, 
-            $timeRequest, $timeBorrow, $quantity, $price, $status, 
+            $timeRequest, $timeBorrow, $quantity, $fee, $status, 
             $insertDate, $insertBy, $updateDate, $updateBy) {
         parent::__construct($insertDate, $insertBy, $updateDate, $updateBy);
         $this->borrowBookId = $borrowBookId;
@@ -23,7 +23,7 @@ class BorrowBook extends BaseModel{
         $this->timeRequest = $timeRequest;
         $this->timeBorrow = $timeBorrow;
         $this->quantity = $quantity;
-        $this->price = $price;
+        $this->fee = $fee;
         $this->status = $status;
     }
 
@@ -51,8 +51,8 @@ class BorrowBook extends BaseModel{
         return $this->quantity;
     }
 
-    function getPrice() {
-        return $this->price;
+    function getFee() {
+        return $this->fee;
     }
 
     function getStatus() {
@@ -83,8 +83,8 @@ class BorrowBook extends BaseModel{
         $this->quantity = $quantity;
     }
 
-    function setPrice($price): void {
-        $this->price = $price;
+    function setFee($fee): void {
+        $this->fee = $fee;
     }
 
     function setStatus($status): void {

@@ -32,6 +32,7 @@ class BookManager{
                     $row['language'],
                     $row['publisher'],
                     $row['price'],
+                    $row['fee'],
                     $row['amount'],
                     $row['status'],
                     $row['insert_date'],
@@ -61,6 +62,7 @@ class BookManager{
                     $row['language'],
                     $row['publisher'],
                     $row['price'],
+                    $row['fee'],
                     $row['amount'],
                     $row['status'],
                     $row['insert_date'],
@@ -77,11 +79,11 @@ class BookManager{
     public function addBook($book){
         $query = "INSERT INTO book (
               `title`, `category`, `author`, `language`, `publisher`, `price`, 
-              `amount`, `status`, `insert_date`, `insert_by`, 
+              `fee`, `amount`, `status`, `insert_date`, `insert_by`, 
               `update_date`, `update_by`
             )
             VALUES (
-              '%s', '%s', '%s', '%s', '%s', '%d', '%d', %d, NOW(), %d, NOW(), %d
+              '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%d', %d, NOW(), %d, NOW(), %d
             )";
         $query = \sprintf($query, 
                 $this->db->real_escape_string($book->getTitle()), 
@@ -90,6 +92,7 @@ class BookManager{
                 $this->db->real_escape_string($book->getLanguage()),
                 $this->db->real_escape_string($book->getPublisher()),
                 $this->db->real_escape_string($book->getPrice()),
+                $this->db->real_escape_string($book->getFee()),
                 $this->db->real_escape_string($book->getAmount()),
                 BOOK_ACTIVE,
                 unserialize($_SESSION["current_user"])->getUserId(),
@@ -109,6 +112,7 @@ class BookManager{
                 . (is_null($book->getLanguage()) ? "" : ("language = '" . $this->db->real_escape_string($book->getLanguage()) . "', "))
                 . (is_null($book->getPublisher()) ? "" : ("publisher = '" . $this->db->real_escape_string($book->getPublisher()) . "', "))
                 . (is_null($book->getPrice()) ? "" : ("price = " . $this->db->real_escape_string($book->getPrice()) . ", "))
+                . (is_null($book->getFee()) ? "" : ("fee = " . $this->db->real_escape_string($book->getFee()) . ", "))
                 . (is_null($book->getAmount()) ? "" : ("amount = " . $this->db->real_escape_string($book->getAmount()). ", "))
                 . "update_date = NOW(), "
                 . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())

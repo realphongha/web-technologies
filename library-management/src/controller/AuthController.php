@@ -38,7 +38,7 @@ class AuthController extends BaseController{
         $email = filter_var($request["email"], FILTER_VALIDATE_EMAIL);
         $password = $request["password"];
         if (!filter_var($password, FILTER_VALIDATE_REGEXP,
-            array( "options"=> array( "regexp" => "/.{6,25}/")))){
+            array( "options"=> array( "regexp" => "/.{8,20}/")))){
             return false;
         }
         $user = $this->userManager->findUserByEmailAndPassword($email, 

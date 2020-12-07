@@ -31,6 +31,8 @@
                     <input type="text" id="publisher" name="publisher"><br>
                     <label class="form-required" for="price">Giá:</label><br>
                     <input type="number" id="price" name="price"><br>
+                    <label class="form-required" for="fee">Giá mượn:</label><br>
+                    <input type="number" id="fee" name="fee"><br>
                     <label class="form-required" for="amount">Số lượng:</label><br>
                     <input type="number" id="amount" name="amount"><br>
                     <input type="submit" value="Thêm sách">

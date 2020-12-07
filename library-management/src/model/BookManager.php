@@ -15,13 +15,26 @@ class BookManager{
         }
     }
 
-    public function findAllBooks($page, $pageSize, $sortBy, $sortOrder){
+    public function findAllBooks($page, $pageSize, $sortBy, $sortOrder, $keyword){
         $books = [];
         $query = "SELECT * FROM book"
                 . " WHERE status = " . strval(BOOK_ACTIVE)
-                . " ORDER BY " . $sortBy . " " . $sortOrder . " LIMIT " . 
-                strval(($page-1)*$pageSize) . ", " . strval($pageSize);
-        $result = $this->db->query($query);
+                . (is_null($keyword)?"":" AND (title LIKE CONCAT('%',?,'%') OR "
+                        . "author LIKE CONCAT('%',?,'%') OR "
+                        . "category LIKE CONCAT('%',?,'%') OR "
+                        . "publisher LIKE CONCAT('%',?,'%')) ")
+                . " ORDER BY ? {$sortOrder} LIMIT "
+                . strval(($page-1)*$pageSize) . ", " . strval($pageSize);
+        if (!$conn = $this->db->prepare($query)){
+            return false;
+        }
+        if (is_null($keyword)){
+            $conn->bind_param("s", $sortBy);
+        } else {
+            $conn->bind_param("sssss", $keyword, $keyword, $keyword, $keyword, $sortBy);
+        }
+        $conn->execute();
+        $result = $conn->get_result();
         if ($result) {
             while ($row = $result->fetch_assoc()) {
                 $books[] = new Book(
@@ -41,19 +54,26 @@ class BookManager{
                     $row['update_by']);
             }
             $result->close();
+            return $books;
         } else {
-            echo($this->db->error);
+            return null;
         }
-        return $books;
     }
 
 
     public function findBookById($bookId){
         $query = "SELECT * FROM book "
-                . "WHERE book.book_id = %d";
-        $query = sprintf($query, $this->db->real_escape_string($bookId));
-        if ($result = $this->db->query($query)) {
+                . "WHERE book.book_id = ?";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
+        }
+        $conn->bind_param("i", $bookId);
+        $conn->execute();
+        if ($result = $conn->get_result()) {
             $row = $result->fetch_assoc();
+            if (is_null($row)){
+                return null;
+            }
             $book = new Book(
                     $row['book_id'],
                     $row['title'],
@@ -70,59 +90,55 @@ class BookManager{
                     $row['update_date'],
                     $row['update_by']);
             $result->close();
+            return $book;
         } else {
-            die($this->db->error);
+            return null;
         }
-        return $book;
+        
     }
     
-    public function addBook($book){
+    public function addBook($title, $category, $author, $language, $publisher, 
+            $price, $fee, $amount){
         $query = "INSERT INTO book (
               `title`, `category`, `author`, `language`, `publisher`, `price`, 
               `fee`, `amount`, `status`, `insert_date`, `insert_by`, 
               `update_date`, `update_by`
             )
             VALUES (
-              '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%d', %d, NOW(), %d, NOW(), %d
-            )";
-        $query = \sprintf($query, 
-                $this->db->real_escape_string($book->getTitle()), 
-                $this->db->real_escape_string($book->getCategory()), 
-                $this->db->real_escape_string($book->getAuthor()),
-                $this->db->real_escape_string($book->getLanguage()),
-                $this->db->real_escape_string($book->getPublisher()),
-                $this->db->real_escape_string($book->getPrice()),
-                $this->db->real_escape_string($book->getFee()),
-                $this->db->real_escape_string($book->getAmount()),
-                BOOK_ACTIVE,
-                unserialize($_SESSION["current_user"])->getUserId(),
-                unserialize($_SESSION["current_user"])->getUserId());
-        if ($result = $this->db->query($query)) {
-            return true;
-        } else {
-            die($this->db->error);
+              ?, ?, ?, ?, ?, ?, ?, ?, ". strval(BOOK_ACTIVE) .", NOW(), ". 
+                strval(unserialize($_SESSION["current_user"])->getUserId()) . 
+                ", NOW(), " 
+                . strval(unserialize($_SESSION["current_user"])->getUserId()) .
+            ")";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
         }
+//        echo $query;
+        $conn->bind_param("sssssiii", $title, $category, $author, $language, 
+                $publisher, $price, $fee, $amount);
+        return $conn->execute();
     }
     
-    public function editBook($book){
+    public function editBook($bookId, $title, $category, $author, $language, 
+            $publisher, $price, $fee, $amount){
         $query = "UPDATE book SET "
-                . (is_null($book->getTitle()) ? "" : ("title = '" . $this->db->real_escape_string($book->getTitle()) . "', "))
-                . (is_null($book->getCategory()) ? "" : ("category = '" . $this->db->real_escape_string($book->getCategory()) . "', "))
-                . (is_null($book->getAuthor()) ? "" : ("author = '" . $this->db->real_escape_string($book->getAuthor()) . "', "))
-                . (is_null($book->getLanguage()) ? "" : ("language = '" . $this->db->real_escape_string($book->getLanguage()) . "', "))
-                . (is_null($book->getPublisher()) ? "" : ("publisher = '" . $this->db->real_escape_string($book->getPublisher()) . "', "))
-                . (is_null($book->getPrice()) ? "" : ("price = " . $this->db->real_escape_string($book->getPrice()) . ", "))
-                . (is_null($book->getFee()) ? "" : ("fee = " . $this->db->real_escape_string($book->getFee()) . ", "))
-                . (is_null($book->getAmount()) ? "" : ("amount = " . $this->db->real_escape_string($book->getAmount()). ", "))
+                . "title = ?, "
+                . "category = ?, "
+                . "author = ?, "
+                . "language = ?, "
+                . "publisher = ?, "
+                . "price = ?, "
+                . "fee = ?, "
+                . "amount = ?, "
                 . "update_date = NOW(), "
                 . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
-                . " WHERE book_id = " . strval($book->getBookId());
-//        echo $query;
-        if ($result = $this->db->query($query)) {
-            return true;
-        } else {
-            die($this->db->error);
+                . " WHERE book_id = ?";
+        if(!$conn = $this->db->prepare($query)){
+            return false;
         }
+        $conn->bind_param("sssssiiii", $title, $category, $author, $language, 
+                $publisher, $price, $fee, $amount, $bookId);
+        return $conn->execute();
     }
 
     public function deleteBook($bookId){
@@ -131,10 +147,6 @@ class BookManager{
                 . "update_date = NOW(), "
                 . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
                 . " WHERE book_id = " . strval($bookId);
-        if ($result = $this->db->query($query)) {
-            return true;
-        } else {
-            die($this->db->error);
-        }
+        return $this->db->query($query);
     }
 }

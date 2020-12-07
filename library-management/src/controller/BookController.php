@@ -14,21 +14,30 @@ class BookController extends BaseController{
     }
 
     public function list($request, $queries){
-        if (!array_key_exists("page", $queries)){
+        if (!array_key_exists("page", $queries) || 
+                !is_numeric($queries["page"]) || $queries["page"] < 1){
             $queries["page"] = 1;
         }
-        if (!array_key_exists("pageSize", $queries)){
+        if (!array_key_exists("pageSize", $queries)|| 
+                !is_numeric($queries["pageSize"]) || $queries["pageSize"] < 1){
             $queries["pageSize"] = 25;
         }
         if (!array_key_exists("sortBy", $queries)){
             $queries["sortBy"] = "insert_date";
         }
-        if (!array_key_exists("sortOrder", $queries)){
-            $queries["sortOrder"] = "DESC";
+        if (!array_key_exists("sortOrder", $queries) || 
+                (strtolower($queries["sortOrder"]) != "asc" &&
+                strtolower($queries["sortOrder"]) != "desc")){
+            $queries["sortOrder"] = "desc";
         }
         $books = $this->bookManager->findAllBooks($queries["page"],
                 $queries["pageSize"], $queries["sortBy"], 
-                $queries["sortOrder"]);
+                $queries["sortOrder"], 
+                array_key_exists("keyword", $queries)?$queries["keyword"]:null);
+        if (is_null($books)){
+            $this->redirect("/error/internal");
+            return;
+        }
         $View = new BaseView("book", "list");
         $message = null;
         if (array_key_exists("message", $queries)){
@@ -118,6 +127,18 @@ class BookController extends BaseController{
             $View->renderView("Giá sách phải lớn hơn 0");
             return;
         }
+        if (!array_key_exists("fee", $request) || is_null($request["fee"])){
+            $View->renderView("Bạn vui lòng nhập giá mượn sách");
+            return;
+        }
+        if (!is_numeric($request["fee"])){
+            $View->renderView("Giá mượn sách không phải là số");
+            return;
+        }
+        if ($request["fee"] <= 0){
+            $View->renderView("Giá mượn sách phải lớn hơn 0");
+            return;
+        }
         if (!array_key_exists("amount", $request) || is_null($request["amount"])){
             $View->renderView("Bạn vui lòng nhập số lượng sách");
             return;
@@ -130,17 +151,20 @@ class BookController extends BaseController{
             $View->renderView("Số lượng sách phải lớn hơn 0");
             return;
         }
-        $book = new Book(null, 
+        if ($this->bookManager->addBook(
                 $request["title"], 
                 $request["category"], 
                 $request["author"], 
                 $request["language"], 
                 $request["publisher"], 
-                $request["price"], 
-                $request["amount"], 
-                null, null, null, null, null);
-        $this->bookManager->addBook($book);
-        $this->redirect("/book/list?message=added");
+                $request["price"],
+                $request["fee"],
+                $request["amount"])){
+            $this->redirect("/book/list?message=added");
+        } else {
+            $this->redirect("/error/internal");
+        }
+        
     }
     
     public function update($request, $queries){
@@ -212,6 +236,14 @@ class BookController extends BaseController{
             $View->renderView("Giá sách phải lớn hơn 0", $book);
             return;
         }
+        if (!array_key_exists("fee", $request) || is_null($request["fee"])){
+            $View->renderView("Bạn vui lòng nhập giá mượn sách", $book);
+            return;
+        }
+        if ($request["fee"] <= 0){
+            $View->renderView("Giá mượn sách phải lớn hơn 0", $book);
+            return;
+        }
         if (!array_key_exists("amount", $request) || is_null($request["amount"])){
             $View->renderView("Bạn vui lòng nhập số lượng sách", $book);
             return;
@@ -224,17 +256,20 @@ class BookController extends BaseController{
             $View->renderView("Số lượng sách phải lớn hơn 0", $book);
             return;
         }
-        $book = new Book($queries["id"], 
+        if($this->bookManager->editBook(
+                $queries["id"], 
                 $request["title"], 
                 $request["category"], 
                 $request["author"], 
                 $request["language"], 
                 $request["publisher"], 
                 $request["price"], 
-                $request["amount"], 
-                null, null, null, null, null);
-        $this->bookManager->editBook($book);
-        $this->redirect("/book/list?message=updated");
+                $request["fee"], 
+                $request["amount"])){
+            $this->redirect("/book/list?message=updated");
+        } else {
+            $this->redirect("/error/internal");
+        }
     }
     
     public function delete($request, $queries){
@@ -242,10 +277,15 @@ class BookController extends BaseController{
             $this->redirect("/error/accessDenied");
             return;
         }
-        if (array_key_exists("id", $queries)){
-            $this->bookManager->deleteBook($queries["id"]);
+        if (!array_key_exists("id", $queries) || !is_numeric($queries["id"])){
+            $this->redirect("/error/notFound");
+            return;
         }
-        $this->redirect("/book/list?message=deleted");
+        if($this->bookManager->deleteBook($queries["id"])){
+            $this->redirect("/book/list?message=deleted");
+        } else {
+            $this->redirect("/error/internal");
+        }
     }
     
 }

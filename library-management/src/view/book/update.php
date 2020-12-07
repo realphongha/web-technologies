@@ -30,6 +30,8 @@
                     <input type="text" id="publisher" name="publisher" value="<?php echo $variables->getPublisher(); ?>"><br>
                     <label for="price">Giá:</label><br>
                     <input type="number" id="price" name="price" value="<?php echo $variables->getPrice(); ?>"><br>
+                    <label for="fee">Giá mượn:</label><br>
+                    <input type="number" id="fee" name="fee" value="<?php echo $variables->getFee(); ?>"><br>
                     <label for="amount">Số lượng:</label><br>
                     <input type="number" id="amount" name="amount" value="<?php echo $variables->getAmount(); ?>"><br>
                     <input type="submit" value="Lưu">

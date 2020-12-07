@@ -18,54 +18,74 @@ class UserManager{
     }
     
     public function checkExistingEmailCreate($email){
-        $query = "SELECT count(*) FROM user WHERE "
-                . "email = '%s'";
-        $query = \sprintf($query, mysql_real_escape_string($email));
-        $result=mysql_query($query);
-        if (mysql_fetch_assoc($result)["total"] != 0){
-            return true;
+        $query = "SELECT count(user_id) FROM user WHERE email = ?";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
         }
-        return false;
+        $conn->bind_param("s", $email);
+        $conn->execute();
+        return $conn->get_result()->fetch_assoc()["count(user_id)"] != 0;
     }
     
     public function checkExistingEmailUpdate($email, $userId){
-        $query = "SELECT count(*) FROM user WHERE "
-                . "email = '%s' AND user_id != '%d'";
-        $query = \sprintf($query, mysql_real_escape_string($email), $userId);
-        $result=mysql_query($query);
-        if (mysql_fetch_assoc($result)["total"] != 0){
-            return true;
+        $query = "SELECT count(user_id) FROM user WHERE email = ? AND user_id != ?";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
         }
-        return false;
+        $conn->bind_param("si", $email, $userId);
+        $conn->execute();
+        return $conn->get_result()->fetch_assoc()["count(user_id)"] != 0;
     }
     
     public function checkExistingPhoneCreate($phone){
-        $query = "SELECT count(*) FROM user WHERE "
-                . "user.phone = '%s'";
-        $query = \sprintf($query, mysql_real_escape_string($phone));
-        $result=mysql_query($query);
-        if (mysql_fetch_assoc($result)["total"] != 0){
-            return true;
+        $query = "SELECT count(user_id) FROM user WHERE phone = ?";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
         }
-        return false;
+        $conn->bind_param("s", $phone);
+        $conn->execute();
+        return $conn->get_result()->fetch_assoc()["count(user_id)"] != 0;
     }
     
     public function checkExistingPhoneUpdate($phone, $userId){
-        $query = "SELECT count(*) FROM user WHERE "
-                . "phone = '%s' AND user_id != '%d'";
-        $query = \sprintf($query, mysql_real_escape_string($phone), $userId);
-        $result=mysql_query($query);
-        if (mysql_fetch_assoc($result)["total"] != 0){
-            return true;
+        $query = "SELECT count(user_id) FROM user WHERE phone = ? AND user_id != ?";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
         }
-        return false;
+        $conn->bind_param("si", $phone, $userId);
+        $conn->execute();
+        return $conn->get_result()->fetch_assoc()["count(user_id)"] != 0;
+    }
+    
+    public function checkExistingIcNumCreate($icNum){
+        $query = "SELECT count(user_id) FROM user WHERE ic_number = ?";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
+        }
+        $conn->bind_param("s", $icNum);
+        $conn->execute();
+        return $conn->get_result()->fetch_assoc()["count(user_id)"] != 0;
+    }
+    
+    public function checkExistingIcNumUpdate($icNum, $userId){
+        $query = "SELECT count(user_id) FROM user WHERE ic_number = ? AND user_id != ?";
+        if (!$conn = $this->db->prepare($query)){
+            return false;
+        }
+        $conn->bind_param("si", $icNum, $userId);
+        $conn->execute();
+        return $conn->get_result()->fetch_assoc()["count(user_id)"] != 0;
     }
 
     public function findUserByEmailAndPassword($email, $hashedPassword){
-        $query = "SELECT * FROM user WHERE "
-                . "email = '%s' AND password = '%s' AND status = " . USER_ACTIVE;
-        $query = \sprintf($query, $email, $hashedPassword);
-        if ($result = $this->db->query($query)) {
+        $query = "SELECT user_id FROM user WHERE "
+                . "email = ? AND password = ? AND status = " . USER_ACTIVE;
+        if (!$conn = $this->db->prepare($query)){
+            return false;
+        }
+        $conn->bind_param("ss", $email, $hashedPassword);
+        $conn->execute();
+        if ($result = $conn->get_result()) {
             $row = $result->fetch_assoc();
             if (!$row) {
                 return false;
@@ -77,20 +97,33 @@ class UserManager{
             $result->close();
         } else {
 //            die($this->db->error);
-            return false;
+            return null;
         }
         return $user;
     }
     
-    public function findAllUsers($page, $pageSize, $sortBy, $sortOrder){
+    public function findAllUsers($page, $pageSize, $sortBy, $sortOrder, 
+            $keyword){
         $users = [];
         $query = "SELECT * FROM user"
                 . " WHERE status = " . strval(USER_ACTIVE)
                 . (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? " and type = " . strval(USER_ROLE) : "")
-                . " ORDER BY " . $sortBy . " " . $sortOrder . " LIMIT " . 
+                . (is_null($keyword)?"":" and (email LIKE CONCAT('%',?,'%') OR"
+                        . "name LIKE CONCAT('%',?,'%') OR"
+                        . "phone LIKE CONCAT('%',?,'%'))")
+                . " ORDER BY ? " . $sortOrder . " LIMIT " . 
                 strval(($page-1)*$pageSize) . ", " . strval($pageSize);
-        $result = $this->db->query($query);
-        if ($result) {
+//        echo $query;
+        if (!$conn = $this->db->prepare($query)){
+            return false;
+        }
+        if (is_null($keyword)){
+            $conn->bind_param("s", $sortBy);
+        } else {
+            $conn->bind_param("ssss", $keyword, $keyword, $keyword, $sortBy);
+        }
+        $conn->execute();
+        if ($result = $conn->get_result()) {
             while ($row = $result->fetch_assoc()) {
                 $users[] = new User($row["user_id"], 
                         $row["email"], 
@@ -108,20 +141,22 @@ class UserManager{
                         $row["update_by"]);
             }
             $result->close();
+            return $users;
         } else {
-            echo($this->db->error);
+            return null;
         }
-        return $users;
     }
 
 
     public function findUserById($userId){
         $query = "SELECT * FROM user "
-                . "WHERE user_id = '%s'"
+                . "WHERE user_id = " . strval($userId)
                 . (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? " and type = " . strval(USER_ROLE) : "");
-        $query = sprintf($query, $this->db->real_escape_string($userId));
         if ($result = $this->db->query($query)) {
             $row = $result->fetch_assoc();
+            if (is_null($row)){
+                return null;
+            }
             $user = new User($row["user_id"], 
                         $row["email"], 
                         null, 
@@ -137,60 +172,66 @@ class UserManager{
                         $row["update_date"], 
                         $row["update_by"]);
             $result->close();
+            return $user;
         } else {
-            die($this->db->error);
+            return null;
+//            die($this->db->error);
         }
-        return $user;
+        
     }
     
-    public function addUser($user){
+    public function addUser($email, $hashedPassword, $name, $icNumber,
+                $phone, $dob, $address, $type){
+        // nho check $user->getType()
         $query = "INSERT INTO user (
               `email`, `password`, `name`, `ic_number`, `phone`, 
-              `date_of_birth`, `address`, `type`, `status, 
+              `date_of_birth`, `address`, `type`, `status`, 
               `insert_date`, `insert_by`, `update_date`, `update_by`
             )
             VALUES (
-              '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', %d, 
-              NOW(), %d, NOW(), %d
-            )";
-        $query = \sprintf($query, 
-                $this->db->real_escape_string($user->getEmail()), 
-                $this->db->real_escape_string(encryptPassword($user->getPassword())), 
-                $this->db->real_escape_string($user->getName()),
-                $this->db->real_escape_string($user->getIcNumber()),
-                $this->db->real_escape_string($user->getPhone()),
-                $this->db->real_escape_string(getDateForDatabase($user->getDateOfBirth())),
-                $this->db->real_escape_string($user->getAddress()),
-                $unserialize(_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? strval(USER_ROLE) : $this->db->real_escape_string($user->getType()),
-                USER_ACTIVE,
-                unserialize($_SESSION["current_user"])->getUserId(),
-                unserialize($_SESSION["current_user"])->getUserId());
-        if ($result = $this->db->query($query)) {
-            return true;
-        } else {
-            die($this->db->error);
+              ?, ?, ?, ?, ?, ?, ?, "
+                . (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? strval(USER_ROLE) : $type())
+                . ", " . strval(USER_ACTIVE) .", 
+              NOW(), "
+                . strval(unserialize($_SESSION["current_user"])->getUserId()) 
+                .", NOW(), "
+                . strval(unserialize($_SESSION["current_user"])->getUserId())
+                . ")";
+        echo $query, "\n";
+        echo $email, " ", $hashedPassword, " ", $name, " ", $icNumber, " ",
+                $phone, " ", $dob, " ", $address, " ", $type, " " , "\n";
+        if (!$conn = $this->db->prepare($query)){
+            echo $this->db->errno;
+            return false;
         }
+        $conn->bind_param("sssssss", $email, $hashedPassword, $name, $icNumber,
+                $phone, $dob, $address);
+        $conn->execute();
+        echo $conn->error;
+        return $conn->execute();
     }
     
-    public function editUser($user){
+    public function editUser($userId, $email, $hashedPassword, $name, $icNumber,
+                $phone, $dob, $address, $type){
         $query = "UPDATE user SET "
-                . (is_null($user->getEmail()) ? "" : ("email = " . mysql_real_escape_string($user->getEmail()) . ", "))
-                . (is_null($user->getPassword()) ? "" : ("password = " . encryptPassword($user->getPassword()) . ", "))
-                . (is_null($user->getName()) ? "" : ("name = " . mysql_real_escape_string($user->getName()) . ", "))
-                . (is_null($user->getIcNumber()) ? "" : ("ic_number = " . mysql_real_escape_string($user->getIcNumber()) . ", "))
-                . (is_null($user->getPhone()) ? "" : ("phone = " . mysql_real_escape_string($user->getPhone()) . ", "))
-                . (is_null($user->getDateOfBirth()) ? "" : ("date_of_birth = " . mysql_real_escape_string($user->getDateOfBirth()) . ", "))
-                . (is_null($user->getAddress()) ? "" : ("address = " . mysql_real_escape_string($user->getAddress()). ", "))
-                . (!is_null($user->getType() && unserialize($_SESSION["current_user"])->getType() == ADMIN_ROLE) ? 
-                ("type = " . mysql_real_escape_string($user->getType()). ", ") : "")
+                . "email = ?,"
+                . "password = ?,"
+                . "name = ?," 
+                . "ic_number = ?,"
+                . "phone = ?,"
+                . "date_of_birth = ?,"
+                . "address = ?,"
+                . "type = ". (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? strval(USER_ROLE) : $type()) . ", "
                 . "update_date = NOW(), "
                 . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
-                . " WHERE user_id = " . strval($user->getUserId());
-        if ($result = $this->db->query($query)) {
-            return true;
-        } else {
-            die($this->db->error);
+                . " WHERE user_id = ?"
+                . (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? " AND type = " . strval(USER_ROLE) : "");
+        if (!$conn = $this->db->prepare($query)){
+            return false;
         }
+        $conn->bind_param("sssssssi", $email, $hashedPassword, $name, $icNumber,
+                $phone, $dob, $address, $userId);
+        return $conn->execute();
     }
 
     public function deleteUser($userId){
@@ -198,12 +239,9 @@ class UserManager{
                 . "status = " . USER_DELETED . ", "
                 . "update_date = NOW(), "
                 . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
-                . " WHERE user_id = " . strval($userId);
-        if ($result = $this->db->query($query)) {
-            return true;
-        } else {
-            die($this->db->error);
-        }
+                . " WHERE user_id = " . strval($userId)
+                . (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? " AND type = " . strval(USER_ROLE) : "");
+        return $this->db->query($query);
     }
 
 }

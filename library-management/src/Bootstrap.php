@@ -1,5 +1,11 @@
 <?php
 
+//require_once __DIR__ . '/../src/model/DbManager.php';
+//$appConfig = require_once __DIR__ . '/../config/application.config.php';
+//$db = new DbManager($appConfig);
+//$dbConnection = $db->getConnection();
+//echo mysqli_real_escape_string($dbConnection, "blah' and 1 = 1'");
+
 require_once __DIR__ . '/../src/utils/GlobalUtils.php';
 require_once __DIR__ . '/../src/controller/BaseController.php';
 require_once __DIR__ . '/../src/controller/ErrorController.php';
@@ -47,6 +53,20 @@ switch ($controller) {
     
     case 'book':
         $controllerName = 'BookController';
+        if ($action == null){
+            $action = "list";
+        }
+        break;
+        
+    case 'borrowBook':
+        $controllerName = 'BorrowBookController';
+        if ($action == null){
+            $action = "list";
+        }
+        break;
+        
+    case 'user':
+        $controllerName = 'UserController';
         if ($action == null){
             $action = "list";
         }

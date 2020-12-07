@@ -78,7 +78,7 @@ class UserManager{
     }
 
     public function findUserByEmailAndPassword($email, $hashedPassword){
-        $query = "SELECT user_id FROM user WHERE "
+        $query = "SELECT * FROM user WHERE "
                 . "email = ? AND password = ? AND status = " . USER_ACTIVE;
         if (!$conn = $this->db->prepare($query)){
             return false;
@@ -87,19 +87,19 @@ class UserManager{
         $conn->execute();
         if ($result = $conn->get_result()) {
             $row = $result->fetch_assoc();
-            if (!$row) {
-                return false;
+            if (is_null($row)) {
+                return null;
             }
             $user = new User($row["user_id"], $row["email"], null, $row["name"], 
                     $row["ic_number"], $row["phone"], $row["date_of_birth"], 
                     $row["address"], $row["type"], 
                     null, null, null, null, null);
             $result->close();
+            return $user;
         } else {
 //            die($this->db->error);
             return null;
         }
-        return $user;
     }
     
     public function findAllUsers($page, $pageSize, $sortBy, $sortOrder, 

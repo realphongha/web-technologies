@@ -43,12 +43,12 @@ class AuthController extends BaseController{
         }
         $user = $this->userManager->findUserByEmailAndPassword($email, 
                 encryptPassword($password));
-        if ($user) {
-            $_SESSION["current_user"] = serialize($user);
-            $this->redirect();
-        } else {
+        if (is_null($user)) {
             $View = new BaseView("home", "");
             $View->renderView("Đăng nhập thất bại!");
+        } else {
+            $_SESSION["current_user"] = serialize($user);
+            $this->redirect();
         }
     }
     

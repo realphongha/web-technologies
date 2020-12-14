@@ -14,6 +14,35 @@ class BookManager{
             throw new Exception('Connection injected is not a Mysqli object');
         }
     }
+    
+    public function findTopBooks($top){
+        $books = [];
+        $query = "SELECT * FROM book ORDER BY RAND() LIMIT " . strval($top);
+        if($result = $this->db->query($query)){
+            while ($row = $result->fetch_assoc()) {
+                $books[] = new Book(
+                    $row['book_id'],
+                    $row['title'],
+                    $row['category'],
+                    $row['author'],
+                    $row['language'],
+                    $row['publisher'],
+                    $row['price'],
+                    $row['fee'],
+                    $row['amount'],
+                    $row['image'],
+                    $row['status'],
+                    $row['insert_date'],
+                    $row['insert_by'],
+                    $row['update_date'],
+                    $row['update_by']);
+            }
+            $result->close();
+            return $books;
+        }else{
+            return null;
+        }
+    }
 
     public function findAllBooks($page, $pageSize, $sortBy, $sortOrder, $keyword){
         $books = [];
@@ -47,6 +76,7 @@ class BookManager{
                     $row['price'],
                     $row['fee'],
                     $row['amount'],
+                    $row['image'],
                     $row['status'],
                     $row['insert_date'],
                     $row['insert_by'],
@@ -84,6 +114,7 @@ class BookManager{
                     $row['price'],
                     $row['fee'],
                     $row['amount'],
+                    $row['image'],
                     $row['status'],
                     $row['insert_date'],
                     $row['insert_by'],
@@ -98,14 +129,14 @@ class BookManager{
     }
     
     public function addBook($title, $category, $author, $language, $publisher, 
-            $price, $fee, $amount){
+            $price, $fee, $amount, $filePath){
         $query = "INSERT INTO book (
               `title`, `category`, `author`, `language`, `publisher`, `price`, 
-              `fee`, `amount`, `status`, `insert_date`, `insert_by`, 
+              `fee`, `amount`, `image`, `status`, `insert_date`, `insert_by`, 
               `update_date`, `update_by`
             )
             VALUES (
-              ?, ?, ?, ?, ?, ?, ?, ?, ". strval(BOOK_ACTIVE) .", NOW(), ". 
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ". strval(BOOK_ACTIVE) .", NOW(), ". 
                 strval(unserialize($_SESSION["current_user"])->getUserId()) . 
                 ", NOW(), " 
                 . strval(unserialize($_SESSION["current_user"])->getUserId()) .
@@ -114,13 +145,13 @@ class BookManager{
             return false;
         }
 //        echo $query;
-        $conn->bind_param("sssssiii", $title, $category, $author, $language, 
-                $publisher, $price, $fee, $amount);
+        $conn->bind_param("sssssiiis", $title, $category, $author, $language, 
+                $publisher, $price, $fee, $amount, $filePath);
         return $conn->execute();
     }
     
     public function editBook($bookId, $title, $category, $author, $language, 
-            $publisher, $price, $fee, $amount){
+            $publisher, $price, $fee, $amount, $filePath){
         $query = "UPDATE book SET "
                 . "title = ?, "
                 . "category = ?, "
@@ -130,6 +161,7 @@ class BookManager{
                 . "price = ?, "
                 . "fee = ?, "
                 . "amount = ?, "
+                . (is_null($filePath) ? "" : "image = '" . $filePath . "', ")
                 . "update_date = NOW(), "
                 . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
                 . " WHERE book_id = ?";

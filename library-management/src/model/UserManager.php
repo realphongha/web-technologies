@@ -92,7 +92,7 @@ class UserManager{
             }
             $user = new User($row["user_id"], $row["email"], null, $row["name"], 
                     $row["ic_number"], $row["phone"], $row["date_of_birth"], 
-                    $row["address"], $row["type"], 
+                    $row["address"], $row["type"], $row["image"], 
                     null, null, null, null, null);
             $result->close();
             return $user;
@@ -134,6 +134,7 @@ class UserManager{
                         $row["date_of_birth"], 
                         $row["address"], 
                         $row["type"], 
+                        $row["image"],
                         $row["status"], 
                         $row["insert_date"], 
                         $row["insert_by"], 
@@ -166,6 +167,7 @@ class UserManager{
                         $row["date_of_birth"], 
                         $row["address"], 
                         $row["type"], 
+                        $row["image"],
                         $row["status"], 
                         $row["insert_date"], 
                         $row["insert_by"], 
@@ -181,17 +183,18 @@ class UserManager{
     }
     
     public function addUser($email, $hashedPassword, $name, $icNumber,
-                $phone, $dob, $address, $type){
+                $phone, $dob, $address, $type, $filePath){
         // nho check $user->getType()
         $query = "INSERT INTO user (
               `email`, `password`, `name`, `ic_number`, `phone`, 
-              `date_of_birth`, `address`, `type`, `status`, 
+              `date_of_birth`, `address`, `type`, `image`, `status`, 
               `insert_date`, `insert_by`, `update_date`, `update_by`
             )
             VALUES (
               ?, ?, ?, ?, ?, ?, ?, "
                 . (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? strval(USER_ROLE) : $type())
-                . ", " . strval(USER_ACTIVE) .", 
+                . ", ?, "
+                . strval(USER_ACTIVE) .", 
               NOW(), "
                 . strval(unserialize($_SESSION["current_user"])->getUserId()) 
                 .", NOW(), "
@@ -204,15 +207,15 @@ class UserManager{
             echo $this->db->errno;
             return false;
         }
-        $conn->bind_param("sssssss", $email, $hashedPassword, $name, $icNumber,
-                $phone, $dob, $address);
+        $conn->bind_param("ssssssss", $email, $hashedPassword, $name, $icNumber,
+                $phone, $dob, $address, $filePath);
         $conn->execute();
         echo $conn->error;
         return $conn->execute();
     }
     
     public function editUser($userId, $email, $hashedPassword, $name, $icNumber,
-                $phone, $dob, $address, $type){
+                $phone, $dob, $address, $type, $filePath){
         $query = "UPDATE user SET "
                 . "email = ?,"
                 . "password = ?,"
@@ -222,6 +225,7 @@ class UserManager{
                 . "date_of_birth = ?,"
                 . "address = ?,"
                 . "type = ". (unserialize($_SESSION["current_user"])->getType() == EMPLOYEE_ROLE ? strval(USER_ROLE) : $type()) . ", "
+                . (is_null($filePath) ? "" : "image = '" . $filePath . "', ")
                 . "update_date = NOW(), "
                 . "update_by = " . strval(unserialize($_SESSION["current_user"])->getUserId())
                 . " WHERE user_id = ?"

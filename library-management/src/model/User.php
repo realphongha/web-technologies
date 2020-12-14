@@ -13,10 +13,11 @@ class User extends BaseModel{
     private $dateOfBirth;
     private $address;
     private $type;
+    private $image;
     private $status;
     
     function __construct($userId, $email, $password, $name, $icNumber, $phone, 
-            $dateOfBirth, $address, $type, $status,
+            $dateOfBirth, $address, $type, $image, $status,
             $insertDate, $insertBy, $updateDate, $updateBy) {
         parent::__construct($insertDate, $insertBy, $updateDate, $updateBy);
         $this->userId = $userId;
@@ -28,6 +29,7 @@ class User extends BaseModel{
         $this->dateOfBirth = $dateOfBirth;
         $this->address = $address;
         $this->type = $type;
+        $this->image = $image;
         $this->status = $status;
     }
     
@@ -109,6 +111,14 @@ class User extends BaseModel{
 
     function setStatus($status): void {
         $this->status = $status;
+    }
+
+    function getImage() {
+        return $this->image;
+    }
+
+    function setImage($image): void {
+        $this->image = $image;
     }
 
 }

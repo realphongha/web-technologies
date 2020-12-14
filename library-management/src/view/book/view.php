@@ -26,6 +26,12 @@
                 echo "Nhà xuất bản: " , $variables->getPublisher(), "</br>";
                 echo "Giá: " , $variables->getPrice(), "</br>";
                 echo "Số lượng còn lại: " , $variables->getAmount(), "</br>";
+                echo "Ảnh: </br>";
+                ?>
+                <img src="<?php echo $variables->getImage(); ?>"
+                     style="height: 200px; width: 200px;"/>
+                <?php
+                echo "</br>";
                 if (isset($_SESSION["current_user"]) && 
                         $_SESSION["current_user"] && 
                         (unserialize($_SESSION["current_user"])->getType() == ADMIN_ROLE || 

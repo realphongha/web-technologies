@@ -13,10 +13,11 @@ class Book extends BaseModel{
     private $price;
     private $fee;
     private $amount;
+    private $image;
     private $status;
     
     function __construct($bookId, $title, $category, $author, $language, 
-            $publisher, $price, $fee, $amount, $status, 
+            $publisher, $price, $fee, $amount, $image, $status, 
             $insertDate, $insertBy, $updateDate, $updateBy) {
         parent::__construct($insertDate, $insertBy, $updateDate, $updateBy);
         $this->bookId = $bookId;
@@ -28,6 +29,7 @@ class Book extends BaseModel{
         $this->price = $price;
         $this->fee = $fee;
         $this->amount = $amount;
+        $this->image = $image;
         $this->status = $status;
     }
     
@@ -109,6 +111,14 @@ class Book extends BaseModel{
 
     function setStatus($status): void {
         $this->status = $status;
+    }
+    
+    function getImage() {
+        return $this->image;
+    }
+
+    function setImage($image): void {
+        $this->image = $image;
     }
 
 }

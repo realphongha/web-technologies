@@ -151,6 +151,31 @@ class BookController extends BaseController{
             $View->renderView("Số lượng sách phải lớn hơn 0");
             return;
         }
+        if (!file_exists($_FILES["image"]["tmp_name"])) {
+            $View->renderView("Bạn vui lòng upload ảnh");
+            return;
+        }
+        $removeExtension = explode('.', basename($_FILES["image"]["name"]));
+        $fileName = date("m-d-y") . date("h-i-sa") 
+                . "-" . strval(unserialize($_SESSION["current_user"])->getUserId())
+                . ".$removeExtension[1]";
+        $staticFilePath = STATIC_IMG_DIRECTORY_BOOK . $fileName;
+        $dbFilePath = IMG_DIRECTORY_BOOK . $fileName;
+        $fileType = pathinfo($staticFilePath, PATHINFO_EXTENSION);
+        if (!in_array($fileType, ALLOW_IMG_TYPES)){
+            $View->renderView("Định dạng ảnh không được hỗ trợ (chỉ hỗ trợ jpg, jpeg, png)");
+            return;
+        } else if ($_FILES["image"]["size"] > MAX_FILE_SIZE){
+            $View->renderView("Ảnh vượt quá kích thước cho phép (2MB)");
+            return;
+        } else if (file_exists($staticFilePath)) {
+            $View->renderView("Upload thất bại. Vui lòng thử lại");
+            return;
+        }
+        if (!move_uploaded_file($_FILES["image"]["tmp_name"], $staticFilePath)) {
+            $View->renderView("Upload thất bại. Vui lòng thử lại");
+            return;
+        }
         if ($this->bookManager->addBook(
                 $request["title"], 
                 $request["category"], 
@@ -159,7 +184,8 @@ class BookController extends BaseController{
                 $request["publisher"], 
                 $request["price"],
                 $request["fee"],
-                $request["amount"])){
+                $request["amount"],
+                $dbFilePath)){
             $this->redirect("/book/list?message=added");
         } else {
             $this->redirect("/error/internal");
@@ -256,6 +282,31 @@ class BookController extends BaseController{
             $View->renderView("Số lượng sách phải lớn hơn 0", $book);
             return;
         }
+        if (file_exists($_FILES["image"]["tmp_name"])) {
+            $removeExtension = explode('.', basename($_FILES["image"]["name"]));
+            $fileName = date("m-d-y") . date("h-i-sa") 
+                    . "-" . strval(unserialize($_SESSION["current_user"])->getUserId())
+                    . ".$removeExtension[1]";
+            $staticFilePath = STATIC_IMG_DIRECTORY_BOOK . $fileName;
+            $dbFilePath = IMG_DIRECTORY_BOOK . $fileName;
+            $fileType = pathinfo($staticFilePath, PATHINFO_EXTENSION);
+            if (!in_array($fileType, ALLOW_IMG_TYPES)){
+                $View->renderView("Định dạng ảnh không được hỗ trợ (chỉ hỗ trợ jpg, jpeg, png)");
+                return;
+            } else if ($_FILES["image"]["size"] > MAX_FILE_SIZE){
+                $View->renderView("Ảnh vượt quá kích thước cho phép (2MB)");
+                return;
+            } else if (file_exists($staticFilePath)) {
+                $View->renderView("Upload thất bại. Vui lòng thử lại");
+                return;
+            }
+            if (!move_uploaded_file($_FILES["image"]["tmp_name"], $staticFilePath)) {
+                $View->renderView("Upload thất bại. Vui lòng thử lại");
+                return;
+            }
+        } else {
+            $dbFilePath = null;
+        }
         if($this->bookManager->editBook(
                 $queries["id"], 
                 $request["title"], 
@@ -265,7 +316,8 @@ class BookController extends BaseController{
                 $request["publisher"], 
                 $request["price"], 
                 $request["fee"], 
-                $request["amount"])){
+                $request["amount"],
+                $dbFilePath)){
             $this->redirect("/book/list?message=updated");
         } else {
             $this->redirect("/error/internal");

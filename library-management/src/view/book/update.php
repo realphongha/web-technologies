@@ -17,7 +17,8 @@
         <div id="content">
             <h1>Sửa sách</h1>
             <div id="updateBookForm">
-                <form action="<?php echo "/book/update?id=" . strval($variables->getBookId()); ?>" method="post">
+                <form action="<?php echo "/book/update?id=" . strval($variables->getBookId()); ?>" 
+                      method="post" enctype="multipart/form-data">
                     <label for="title">Tên sách:</label><br>
                     <input type="text" id="title" name="title" value="<?php echo $variables->getTitle(); ?>"><br>
                     <label for="category">Thể loại:</label><br>
@@ -34,6 +35,8 @@
                     <input type="number" id="fee" name="fee" value="<?php echo $variables->getFee(); ?>"><br>
                     <label for="amount">Số lượng:</label><br>
                     <input type="number" id="amount" name="amount" value="<?php echo $variables->getAmount(); ?>"><br>
+                    <label class="form-required" for="image">Ảnh sách:</label><br>
+                    <input type="file" name="image"><br>
                     <input type="submit" value="Lưu">
                 </form> 
             </div>

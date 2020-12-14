@@ -15,7 +15,20 @@
         ?>
         
         <div id="content">
-            <h2>Home content</h2>
+            <h2>Top 5 books</h2>
+            <?php
+            foreach ($variables as $book){
+                ?>
+                <h3>
+                    <?php
+                        echo "<a href='/book/view?id={$book->getBookId()}'>"
+                                . $book->getTitle() . "</a>: " 
+                                . $book->getPrice() . " (VND)";
+                    ?>
+                </h3>
+                <?php
+            }
+            ?>
         </div>
         
         <?php

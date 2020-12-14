@@ -18,7 +18,8 @@
         <div id="content">
             <h1>Thêm sách</h1>
             <div class="addBookForm">
-                <form action="/book/add" method="post">
+                <form action="/book/add" method="post" 
+                      enctype="multipart/form-data">
                     <label class="form-required" for="title">Tên sách:</label><br>
                     <input type="text" id="title" name="title"><br>
                     <label class="form-required" for="category">Thể loại:</label><br>
@@ -35,8 +36,10 @@
                     <input type="number" id="fee" name="fee"><br>
                     <label class="form-required" for="amount">Số lượng:</label><br>
                     <input type="number" id="amount" name="amount"><br>
+                    <label class="form-required" for="image">Ảnh sách:</label><br>
+                    <input type="file" name="image"><br>
                     <input type="submit" value="Thêm sách">
-                </form> 
+                </form>
             </div>
         </div>
         

@@ -1,5 +1,18 @@
 <?php
 
+// number of books to be displayed in homepage:
+define("TOP_BOOK_HOME", 5);
+
+// images:
+define("ALLOW_IMG_TYPES", array("jpg","jpeg","png"));
+define("MAX_FILE_SIZE", 2097152);
+define("UPLOAD_DIRECTORY", "/upload");
+define("STATIC_UPLOAD_DIRECTORY", "C:\\xampp\\htdocs\\library-management\\public\\upload");
+define("IMG_DIRECTORY_USER", UPLOAD_DIRECTORY . "/img/user/");
+define("IMG_DIRECTORY_BOOK", UPLOAD_DIRECTORY . "/img/book/");
+define("STATIC_IMG_DIRECTORY_USER", STATIC_UPLOAD_DIRECTORY . "\\img\\user\\");
+define("STATIC_IMG_DIRECTORY_BOOK", STATIC_UPLOAD_DIRECTORY . "\\img\\book\\");
+
 // database constant:
  
 // book status:

@@ -1,6 +1,0 @@
-<?xml version="1.0"?> 
-<shapes> 
-    <shape type="circle" radius="2" /> 
-    <shape type="rectangle" length="5" width="2" /> 
-    <shape type="square" length="7" /> 
-</shapes> 

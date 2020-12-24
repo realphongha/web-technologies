@@ -36,7 +36,7 @@
                     <input type="number" id="fee" name="fee" value="<?php echo $variables->getFee(); ?>"><br>
                     <label for="amount">Số lượng:</label><br>
                     <input type="number" id="amount" name="amount" value="<?php echo $variables->getAmount(); ?>"><br>
-                    <label class="form-required" for="image">Ảnh sách:</label><br>
+                    <label for="image">Ảnh sách (để trống để không thay đổi ảnh):</label><br>
                     <input type="file" name="image"><br><br>
                     <input class="green-btn" type="submit" value="Lưu">
                 </form> 

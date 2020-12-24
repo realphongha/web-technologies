@@ -4,7 +4,7 @@
     color: red;
 }
 
-h1 {color: #45a049;}
+h1 {color: #333;}
 
 /* HEADER */
 
@@ -17,7 +17,7 @@ h1 {color: #45a049;}
     float: left;
     margin-top: 10px;
     margin-left: 10px;
-    color: #45a049;
+    color: #333;
 
 }
 
@@ -181,7 +181,7 @@ table.datatable, .datatable th, .datatable td {
 }
 
 .datatable th {
-    background-color: #4CAF50;
+    background-color: #333;
     color: white;
 }
 
@@ -206,7 +206,7 @@ table.datatable, .datatable th, .datatable td {
     margin-bottom: 15px;
 }
 
-.alert.success {background-color: #4CAF50;}
+.alert.success {background-color: #333;}
 .alert.info {background-color: #2196F3;}
 .alert.warning {background-color: #ff9800;}
 
@@ -232,7 +232,7 @@ img.avatar {
 /* DROPDOWN */
 
 .dropbtn {
-  background-color: #4CAF50;
+  background-color: #333;
   color: white;
   padding: 16px;
   font-size: 16px;
@@ -309,11 +309,11 @@ img.avatar {
 }
 
 .pagination a.active {
-    background-color: #45a049;
+    background-color: #333;
     color: white;
 }
 
-.pagination a:hover:not(.active):not(.pg-text) {background-color: #4CAF50;}
+.pagination a:hover:not(.active):not(.pg-text) {background-color: #333;}
 
 .pagination a.is-disabled{
     color: grey;
@@ -372,7 +372,7 @@ ul.navi-bar {
 }
 
 input.green-btn {
-    background-color: #4CAF50; /* Green */
+    background-color: #333; /* Green */
     border: none;
     color: white;
     padding: 15px 32px;

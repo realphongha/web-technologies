@@ -190,8 +190,13 @@ class BookManager{
         if(!$conn = $this->db->prepare($query)){
             return false;
         }
-        $conn->bind_param("sssssiiii", $title, $category, $author, $language, 
-                $publisher, $price, $fee, $amount, $bookId);
+        if (is_null($filePath)){
+            $conn->bind_param("sssssiiii", $title, $category, $author, $language, 
+                    $publisher, $price, $fee, $amount, $bookId);
+        } else {
+            $conn->bind_param("sssssiiisi", $title, $category, $author, $language, 
+                    $publisher, $price, $fee, $amount, $filePath, $bookId);
+        }
         return $conn->execute();
     }
 

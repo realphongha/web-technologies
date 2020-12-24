@@ -27,7 +27,7 @@ class BorrowBookManager{
                 . "FROM borrow_book, book, user"
                 . " WHERE borrow_book.book_id = book.book_id"
                 . " AND borrow_book.user_id = user.user_id"
-                . (is_null($keyword)?"":" WHERE (book.title LIKE CONCAT('%',?,'%')"
+                . (is_null($keyword)?"":" AND (book.title LIKE CONCAT('%',?,'%')"
                 . " OR user.name LIKE CONCAT('%',?,'%'))")
                 . (is_null($status)?"":" AND borrow_book.status =" . strval($status))
                 . " ORDER BY ? " . $sortOrder . " LIMIT " . 
